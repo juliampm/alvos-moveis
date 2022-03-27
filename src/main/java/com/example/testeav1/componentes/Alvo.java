@@ -1,5 +1,6 @@
 package com.example.testeav1.componentes;
 
+import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -38,7 +39,10 @@ public class Alvo extends Thread {
     }
 
     public void desenharAlvo(int y){
-        this.circuloAlvo.setTranslateY(y);
+        // Manter a animação mais flúida com a Thread do JavaFX
+        Platform.runLater(() ->{
+            this.circuloAlvo.setTranslateY(y);
+        });
     }
 
     @Override

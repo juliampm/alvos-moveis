@@ -1,5 +1,6 @@
 package com.example.testeav1.componentes;
 
+import javafx.application.Platform;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
@@ -29,8 +30,11 @@ public class Tiro extends Thread{
     }
 
     public void desenharTiro(double x, double y){
-        this.circuloTiro.setCenterX(x);
-        this.circuloTiro.setCenterY(y);
+        // Manter a animação mais flúida com a Thread do JavaFX
+        Platform.runLater(() -> {
+            this.circuloTiro.setCenterX(x);
+            this.circuloTiro.setCenterY(y);
+        });
     }
 
     @Override

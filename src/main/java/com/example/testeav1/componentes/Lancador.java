@@ -6,13 +6,21 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.Semaphore;
 
 public class Lancador extends Thread{
+    private int identificacao;
     private Rectangle retangulo;
     private ArrayList<Tiro> tiros = new ArrayList();
+    private Carregador carregador = new Carregador();
+    private ArrayList<Alvo> alvosDisponiveis;
+    private Semaphore semaforoManipularAlvos;
 
-    public Lancador(){
+    public Lancador(int identificacao, ArrayList<Alvo> alvosDisponiveis, Semaphore semaforoManipularAlvos) throws InterruptedException {
+        this.semaforoManipularAlvos = semaforoManipularAlvos;
+        this.identificacao = identificacao;
         retangulo = new Rectangle();
+        this.alvosDisponiveis = alvosDisponiveis;
         desenharRetangulo();
         start();
     }
@@ -26,6 +34,7 @@ public class Lancador extends Thread{
     }
 
     public Localizacao mirar (long timestamp, int identificacao) throws InterruptedException {
+        sleep(30);
         long tempoAtual = System.currentTimeMillis() ;
         long tempoDecorrido = tempoAtual - timestamp;
         long distPercorrida = tempoDecorrido/Dados.TEMPO_ATUALIZACAO_PROJETEIS;
@@ -41,11 +50,10 @@ public class Lancador extends Thread{
             distancia = Math.sqrt(200.f*200.f + mid*mid);
             i++;
             if(distancia - (novoTamanho - mid) < Dados.TAMANHO_ALVO - 1 && distancia - (novoTamanho - mid) > (Dados.TAMANHO_ALVO - 1)*-1){
-                System.out.println("Atirou mirando no Alvo: "+ identificacao);
+                System.out.println("O lançador " + this.identificacao + " atirou mirando no Alvo: "+ identificacao);
                 var distancia2 = (distancia*distancia);
                 return new Localizacao(200*200/distancia2, mid*mid/distancia2);
             } else if (inf >= sup) {
-                System.out.println("Não achou");
                 var distancia2 = (distancia*distancia);
                 return new Localizacao(200*200/(distancia2), mid*mid/(distancia2));
             } else if(distancia > novoTamanho - mid) {
@@ -56,11 +64,36 @@ public class Lancador extends Thread{
         }
     }
 
-    public void atirar(long timestamp, int identificacaoAlvo, int origemX) throws InterruptedException {
+    public void preparar(long timestamp, int identificacaoAlvo, int origemX) throws InterruptedException {
         Localizacao pontoParaAtirar = mirar(timestamp, identificacaoAlvo);
         boolean sentidoDoTiro = origemX < 200;
+        atirar(pontoParaAtirar, sentidoDoTiro, identificacaoAlvo);
+    }
+
+    public void atirar(Localizacao pontoParaAtirar, boolean sentidoDoTiro, int identificacaoAlvo) {
         Tiro t = new Tiro(pontoParaAtirar.getX(), pontoParaAtirar.getY(), sentidoDoTiro, identificacaoAlvo);
         tiros.add(t);
+    }
+
+    public void carregar() throws InterruptedException {
+        this.semaforoManipularAlvos.acquire();
+        if(carregador.temMunicao() && alvosDisponiveis.size() > 0){
+            System.out.println("O lançador " + this.identificacao+ "acha que tem esses alvos: " + alvosDisponiveis.size());
+            try {
+                var alvo = alvosDisponiveis.remove(0);
+                carregador.removerMunicao();
+                semaforoManipularAlvos.release();
+                System.out.println("O lançador " + this.identificacao + "removeu um alvo, tendo agora: " + alvosDisponiveis.size());
+                preparar(alvo.getTimestamp(), alvo.getIdentificacao(), alvo.getOrigemx());
+            } catch (Exception e) {
+                this.semaforoManipularAlvos.release();
+            }
+        };
+        this.semaforoManipularAlvos.release();
+    }
+
+    public void adicionarMunicaoPorAcerto() {
+        this.carregador.adicionarMunicao();
     }
 
     public Rectangle getRetangulo() {
@@ -69,5 +102,17 @@ public class Lancador extends Thread{
 
     public ArrayList<Tiro> getTiros() {
         return tiros;
+    }
+
+    @Override
+    public void run() {
+        super.run();
+        while (true){
+            try {
+                carregar();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
