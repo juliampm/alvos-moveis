@@ -14,7 +14,7 @@ public class Alvo extends Thread {
     private int origemx;
     private int origemy = 0;
     private int destinox;
-    private int destinoy = 390;
+    private float destinoy = Dados.TAMANHO_MAX_TELA_Y;
     private int localizacaoAtualizada;
     private long timestamp;
     private int freqAtualizacaoPosicao = 30;
@@ -84,7 +84,7 @@ public class Alvo extends Thread {
         return localizacaoAtualizada;
     }
 
-    public int getDestinoy() {
+    public float getDestinoy() {
         return destinoy;
     }
 

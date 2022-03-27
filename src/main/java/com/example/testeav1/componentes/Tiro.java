@@ -7,11 +7,11 @@ public class Tiro extends Thread{
     private String identificacao;
     private int municao;
     private int origemx = 200;
-    private int origemy = 400;
+    private float origemy = Dados.TAMANHO_MAX_TELA_Y - Dados.ALTURA_LANCADOR;
     private double destinox;
     private double destinoy;
     private double localizacaoX = 200;
-    private double localizacaoY = 400;
+    private double localizacaoY = Dados.TAMANHO_MAX_TELA_Y - Dados.ALTURA_LANCADOR;
     private int timestamp;
     private int freqAtualizacao = 30;
     private boolean contatoAlvo = false;

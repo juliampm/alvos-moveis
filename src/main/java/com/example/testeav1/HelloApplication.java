@@ -45,11 +45,15 @@ public class HelloApplication extends Application {
                             var alvo = new Alvo(alvos.size());
                             alvos.add(alvo);
                             //A cada alvo gerado, gera-se um tiro correspondente, por enquanto
-                            lancador.atirar(alvo.getTimestamp(), alvo.getIdentificacao(), alvo.getOrigemx());
+                            try {
+                                lancador.atirar(alvo.getTimestamp(), alvo.getIdentificacao(), alvo.getOrigemx());
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }));
         //Funcionando por tempo indefinido
-        novosAlvosTimer.setCycleCount(Timeline.INDEFINITE);
+        novosAlvosTimer.setCycleCount(1);
         novosAlvosTimer.play();
 
         //Atualizar a tela para tentar diminuir travamentos de renderização
