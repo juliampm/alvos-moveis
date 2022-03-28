@@ -42,19 +42,15 @@ public class HelloApplication extends Application {
 
         //Função que lança alvos a cada determinado tempo
         Timeline novosAlvosTimer = new Timeline(
-                new KeyFrame(Duration.millis(200),
+                new KeyFrame(Duration.millis(Dados.TEMPO_GERACAO_ALVOS),
                     new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent event) {
-                            Alvo alvo = new Alvo(alvos.size());
-                            alvosDisponiveis.add(alvo);
-                            alvos.add(alvo);
-//                            Alvo alvo2 = new Alvo(alvos.size());
-//                            alvosDisponiveis.add(alvo2);
-//                            alvos.add(alvo2);
-//                            Alvo alvo3 = new Alvo(alvos.size());
-//                            alvosDisponiveis.add(alvo3);
-//                            alvos.add(alvo3);
+                            for(int i = 0;i< Dados.QUANTIDADE_ALVOS; i++) {
+                                Alvo alvo = new Alvo(alvos.size());
+                                alvosDisponiveis.add(alvo);
+                                alvos.add(alvo);
+                            }
                         }
                     }));
         //Funcionando por tempo indefinido
@@ -133,12 +129,10 @@ public class HelloApplication extends Application {
         alvos.add(alvo2);
 
 
-
-        this.lancadores.add(new Lancador(this.lancadores.size(), alvosDisponiveis, semaforoManipularAlvos));
-        root.getChildren().add(this.lancadores.get(lancadores.size()-1).getRetangulo());
-        this.lancadores.add(new Lancador(this.lancadores.size(), alvosDisponiveis, semaforoManipularAlvos));
-        root.getChildren().add(this.lancadores.get(lancadores.size()-1).getRetangulo());
-
+        for(int i = 0;i< Dados.QUANTIDADE_LANCADORES; i++) {
+            this.lancadores.add(new Lancador(this.lancadores.size(), alvosDisponiveis, semaforoManipularAlvos));
+            root.getChildren().add(this.lancadores.get(lancadores.size()-1).getRetangulo());
+        }
     }
 
     public static void main(String[] args) {
