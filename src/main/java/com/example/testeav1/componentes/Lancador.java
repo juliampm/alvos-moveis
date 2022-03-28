@@ -11,16 +11,19 @@ import java.util.concurrent.Semaphore;
 public class Lancador extends Thread{
     private int identificacao;
     private Rectangle retangulo;
+    private Color corDosTiros;
     private ArrayList<Tiro> tiros = new ArrayList();
     private Carregador carregador = new Carregador();
     private ArrayList<Alvo> alvosDisponiveis;
     private Semaphore semaforoManipularAlvos;
+    private Semaphore semaforoFluxoAtirar = new Semaphore(1);
 
     public Lancador(int identificacao, ArrayList<Alvo> alvosDisponiveis, Semaphore semaforoManipularAlvos) throws InterruptedException {
         this.semaforoManipularAlvos = semaforoManipularAlvos;
         this.identificacao = identificacao;
         retangulo = new Rectangle();
         this.alvosDisponiveis = alvosDisponiveis;
+        this.corDosTiros = Utils.pegarUmaCorAleatoria();
         desenharRetangulo();
         start();
     }
@@ -71,25 +74,22 @@ public class Lancador extends Thread{
     }
 
     public void atirar(Localizacao pontoParaAtirar, boolean sentidoDoTiro, int identificacaoAlvo) {
-        Tiro t = new Tiro(pontoParaAtirar.getX(), pontoParaAtirar.getY(), sentidoDoTiro, identificacaoAlvo);
+        Tiro t = new Tiro(pontoParaAtirar.getX(), pontoParaAtirar.getY(), sentidoDoTiro, identificacaoAlvo, corDosTiros);
         tiros.add(t);
+        this.semaforoFluxoAtirar.release();
     }
 
     public void carregar() throws InterruptedException {
         this.semaforoManipularAlvos.acquire();
         if(carregador.temMunicao() && alvosDisponiveis.size() > 0){
-            System.out.println("O lançador " + this.identificacao+ "acha que tem esses alvos: " + alvosDisponiveis.size());
-            try {
-                var alvo = alvosDisponiveis.remove(0);
-                carregador.removerMunicao();
-                semaforoManipularAlvos.release();
-                System.out.println("O lançador " + this.identificacao + "removeu um alvo, tendo agora: " + alvosDisponiveis.size());
-                preparar(alvo.getTimestamp(), alvo.getIdentificacao(), alvo.getOrigemx());
-            } catch (Exception e) {
-                this.semaforoManipularAlvos.release();
-            }
-        };
-        this.semaforoManipularAlvos.release();
+            var alvo = alvosDisponiveis.remove(0);
+            semaforoManipularAlvos.release();
+            this.semaforoFluxoAtirar.acquire();
+            carregador.removerMunicao();
+            preparar(alvo.getTimestamp(), alvo.getIdentificacao(), alvo.getOrigemx());
+        } else {
+            this.semaforoManipularAlvos.release();
+        }
     }
 
     public void adicionarMunicaoPorAcerto() {

@@ -42,7 +42,7 @@ public class HelloApplication extends Application {
 
         //Função que lança alvos a cada determinado tempo
         Timeline novosAlvosTimer = new Timeline(
-                new KeyFrame(Duration.millis(2000),
+                new KeyFrame(Duration.millis(200),
                     new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent event) {
@@ -131,6 +131,8 @@ public class HelloApplication extends Application {
         Alvo alvo2 = new Alvo(alvos.size());
         alvosDisponiveis.add(alvo2);
         alvos.add(alvo2);
+
+
 
         this.lancadores.add(new Lancador(this.lancadores.size(), alvosDisponiveis, semaforoManipularAlvos));
         root.getChildren().add(this.lancadores.get(lancadores.size()-1).getRetangulo());

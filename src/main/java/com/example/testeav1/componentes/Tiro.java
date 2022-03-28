@@ -20,8 +20,8 @@ public class Tiro extends Thread{
     private Circle circuloTiro;
     private boolean sentido;
 
-    public Tiro (double destinox, double destinoy, boolean sentido, int identificacaoAlvo){
-        circuloTiro = new Circle(origemx,origemy,Dados.TAMANHO_TIRO, Color.GREEN);
+    public Tiro (double destinox, double destinoy, boolean sentido, int identificacaoAlvo, Color lancador){
+        circuloTiro = new Circle(origemx,origemy,Dados.TAMANHO_TIRO, lancador);
         this.destinox = destinox;
         this.destinoy = destinoy;
         this.sentido = sentido;
