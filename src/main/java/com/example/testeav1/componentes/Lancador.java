@@ -11,6 +11,8 @@ import java.util.concurrent.Semaphore;
 public class Lancador extends Thread{
     private int identificacao;
     private Rectangle retangulo;
+
+
     private Color corDosTiros;
     private ArrayList<Tiro> tiros = new ArrayList();
     private Carregador carregador = new Carregador();
@@ -49,6 +51,7 @@ public class Lancador extends Thread{
 
         int i =0;
         while (true) {
+            long inicioMirar = System.currentTimeMillis();
             mid = (sup + inf)/2.f;
             distancia = Math.sqrt(200.f*200.f + mid*mid);
             i++;
@@ -64,22 +67,39 @@ public class Lancador extends Thread{
             } else if(distancia < novoTamanho - mid) {
                inf = mid;
             }
+            long finalMirar = System.currentTimeMillis();
+            long totalMirar;
+            totalMirar = finalMirar - inicioMirar;
+            System.out.println("Tempo total Mirar= " + totalMirar);
         }
     }
 
     public void preparar(long timestamp, int identificacaoAlvo, int origemX) throws InterruptedException {
+        long inicioPreparar = System.currentTimeMillis();
         Localizacao pontoParaAtirar = mirar(timestamp, identificacaoAlvo);
         boolean sentidoDoTiro = origemX < 200;
         atirar(pontoParaAtirar, sentidoDoTiro, identificacaoAlvo);
+        long finalPreparar = System.currentTimeMillis();
+        long totalPreparar;
+        totalPreparar = finalPreparar - inicioPreparar;
+        System.out.println("Tempo total preparar: " + totalPreparar);
     }
 
     public void atirar(Localizacao pontoParaAtirar, boolean sentidoDoTiro, int identificacaoAlvo) {
+        long inicioAtirar = System.currentTimeMillis();
         Tiro t = new Tiro(pontoParaAtirar.getX(), pontoParaAtirar.getY(), sentidoDoTiro, identificacaoAlvo, corDosTiros);
         tiros.add(t);
         this.semaforoFluxoAtirar.release();
+        long finalAtirar = System.currentTimeMillis();
+        long totalAtirar;
+        totalAtirar = finalAtirar - inicioAtirar;
+        System.out.println("Tempo total atirar= " + totalAtirar);
+
     }
 
     public void carregar() throws InterruptedException {
+        sleep(30);
+        long inicioCarregar = System.currentTimeMillis();
         this.semaforoManipularAlvos.acquire();
         if(carregador.temMunicao() && alvosDisponiveis.size() > 0){
             var alvo = alvosDisponiveis.remove(0);
@@ -90,6 +110,10 @@ public class Lancador extends Thread{
         } else {
             this.semaforoManipularAlvos.release();
         }
+        long finalCarregar = System.currentTimeMillis();
+        long totalCarregar;
+        totalCarregar = finalCarregar - inicioCarregar;
+        System.out.println("Tempo total carregar: " + totalCarregar);
     }
 
     public void adicionarMunicaoPorAcerto() {
@@ -108,11 +132,16 @@ public class Lancador extends Thread{
     public void run() {
         super.run();
         while (true){
+            long inicioLancador = System.currentTimeMillis();
             try {
                 carregar();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            long finalLancador = System.currentTimeMillis();
+            long totalLancador;
+            totalLancador = finalLancador - inicioLancador;
+            System.out.println("Tempo total Lancador= " + totalLancador);
         }
     }
 }

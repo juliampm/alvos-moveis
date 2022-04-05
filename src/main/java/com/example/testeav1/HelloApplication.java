@@ -109,18 +109,7 @@ public class HelloApplication extends Application {
         colisaoTimer.setCycleCount(Timeline.INDEFINITE);
         colisaoTimer.play();
 
-//        Timeline limparListaAlvos = new Timeline(
-//                new KeyFrame(Duration.millis(5000),
-//                        new EventHandler<ActionEvent>() {
-//                            @Override
-//                            public void handle(ActionEvent event) {
-//                                alvos.removeIf(alvo -> !alvo.isAlive());
-//                                System.out.println("Tamanho da lista: " + alvos.size());
-//                            }
-//                        }));
-//        limparListaAlvos.setCycleCount(Timeline.INDEFINITE);
-//        limparListaAlvos.play();
-
+        //2 Alvos no início da aplicação
         Alvo alvo = new Alvo(alvos.size());
         alvosDisponiveis.add(alvo);
         alvos.add(alvo);

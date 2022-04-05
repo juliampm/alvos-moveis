@@ -41,6 +41,7 @@ public class Tiro extends Thread{
     public void run() {
         super.run();
         while(true){
+            long inicioTiro = System.currentTimeMillis();
             try {
                 this.localizacaoY -= destinoy;
                 if(sentido) {
@@ -63,6 +64,11 @@ public class Tiro extends Thread{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            long finalTiro = System.currentTimeMillis();
+            long totalTiro;
+            totalTiro = finalTiro - inicioTiro;
+            System.out.println("Tempo total tiro= " + totalTiro);
+
         }
     }
 

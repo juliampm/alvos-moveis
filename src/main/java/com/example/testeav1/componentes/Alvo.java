@@ -39,7 +39,7 @@ public class Alvo extends Thread {
     }
 
     public void desenharAlvo(int y){
-        // Manter a animação mais flúida com a Thread do JavaFX
+
         Platform.runLater(() ->{
             this.circuloAlvo.setTranslateY(y);
         });
@@ -48,6 +48,7 @@ public class Alvo extends Thread {
     @Override
     public void run() {
         super.run();
+        long inicioAlvo = System.currentTimeMillis();
         while(destinoy >= localizacaoAtualizada && !atingido) {
             try {
                 this.localizacaoAtualizada += 1;
@@ -62,6 +63,10 @@ public class Alvo extends Thread {
         } else {
             System.out.println("Alvo " +identificacao + " não foi atingido!");
         }
+        long finalAlvo = System.currentTimeMillis();
+        long totalAlvo;
+        totalAlvo = finalAlvo - inicioAlvo;
+        System.out.println("Tempo total Alvo= " + totalAlvo);
     }
 
     public Circle getCirculoAlvo() {
